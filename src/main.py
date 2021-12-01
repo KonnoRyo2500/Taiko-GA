@@ -1,6 +1,6 @@
 # 太鼓さん次郎GAアプリ メイン処理
 
-from read_training_data import make_training_data
+from training_data import make_training_data
 
 # メイン処理
 def main():
