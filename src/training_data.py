@@ -51,7 +51,10 @@ def _read_tja_line(tja):
 # TODO: 譜面分岐に対応する
 # TODO: 複数の小節が1行に記載されているときにも正常に読み込めるようにする
 def _read_notes_timing(tja, initial_bpm, offset):
-    elapsed_time_sec = 0.0
+    # 処理の遅延があるため、それを考慮して実際のオフセットに比べて少しだけ
+    # 早めに叩き始めるようにする
+    # TODO: 追加で加えるオフセットを設定ファイルで指定できるようにする
+    elapsed_time_sec = -offset + 1.95
     current_bpm = initial_bpm
     note_buf = ''
     training_data = []
