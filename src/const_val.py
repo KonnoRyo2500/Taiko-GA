@@ -11,6 +11,7 @@ CMD_BPMCHANGE = '#BPMCHANGE'
 # HS変化やその他命令に関しては叩くタイミングには関係ないので考慮しない
 
 # 音符の種類
+NOTE_NONE = 0
 NOTE_DON = 1
 NOTE_KATSU = 2
 NOTE_DON_LARGE = 3
