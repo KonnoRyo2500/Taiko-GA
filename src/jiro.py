@@ -26,7 +26,7 @@ def play_chart(chart, tja_path):
     for note_info in chart:
         note_type, timing = note_info
         wait_time = timing - now + start_time
-        time.sleep(wait_time)
+        time.sleep(wait_time if wait_time >= 0 else 0)
         _play_note(note_type)
         now = time.time()
 
