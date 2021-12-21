@@ -10,12 +10,16 @@ class GA:
     # フレームレートは60fps固定。したがって、60要素で1秒分の譜面となる。
 
     # コンストラクタ
-    def __init__(self, training_data, n_genes=100, gene_length=60*120):
+    def __init__(self, training_data, n_genes=100):
         self.genes = [] # 現世代での遺伝子
         self.scores = [] # 適合度
         self.training_data = training_data # 教師データ
 
-        # 第1世代の生成
+        # 遺伝子の長さの決定
+        final_note_time = training_data[-1][1]
+        gene_length = int((final_note_time + JUDGE_RANGE_FUKA_LATE) // SEC_PER_FRAME)
+
+        # 初期世代の生成
         self._generate_initial_genes(n_genes, gene_length)
         self._eval_genes()
 

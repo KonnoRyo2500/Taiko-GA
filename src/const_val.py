@@ -33,7 +33,7 @@ SCORE_FUKA = -2.0
 SCORE_NONE = 0
 
 # 太鼓さん次郎の仮想フレームレート
-JIRO_FPS = 60
+JIRO_FPS = 30
 SEC_PER_FRAME = 1.0 / JIRO_FPS # 1フレーム当たりの秒数
 
 # 判定範囲
