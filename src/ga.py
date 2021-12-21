@@ -16,8 +16,9 @@ class GA:
         self.training_data = training_data # 教師データ
 
         # 遺伝子の長さの決定
-        final_note_time = training_data[-1][1]
-        gene_length = int((final_note_time + JUDGE_RANGE_FUKA_LATE) // SEC_PER_FRAME)
+        training_final_note_time = training_data[-1][1]
+        gene_final_note_time = training_final_note_time + (JUDGE_RANGE_FUKA_LATE / 1000.0) # ms -> sに変換
+        gene_length = int(gene_final_note_time // SEC_PER_SAMPLING)
 
         # 初期世代の生成
         self._generate_initial_genes(n_genes, gene_length)
@@ -44,7 +45,7 @@ class GA:
         t_data_with_score = [[*t, SCORE_NONE] for t in self.training_data] # (種類, タイミング, 適応度)
         for note in gene:
             # 判定範囲内の音符について、今叩いた音符で処理できるものがないか調べる
-            neighbor_t = [(i, t) for i, t in enumerate(t_data_with_score) if t[2] == SCORE_NONE and JUDGE_RANGE_FUKA_EARLY <= t[1] - timing <= JUDGE_RANGE_FUKA_LATE]
+            neighbor_t = [(i, t) for i, t in enumerate(t_data_with_score) if t[2] == SCORE_NONE and JUDGE_RANGE_FUKA_EARLY <= (t[1] - timing) * 1000 <= JUDGE_RANGE_FUKA_LATE]
             evaluated_note = []
             for i, nt in neighbor_t:
                 # 1つの音符につき、同色の音符は先頭の1つしか見ない
@@ -60,7 +61,9 @@ class GA:
                         evaluated_note.append(NOTE_KATSU_LARGE)
                 note_score = self._eval_note(note, timing, nt_note, nt_timing)
                 t_data_with_score[i][2] = note_score
-            timing += SEC_PER_FRAME
+                if note_score != SCORE_NONE:
+                    break
+            timing += SEC_PER_SAMPLING
 
         # 見逃した音符はすべて不可判定にする
         for t in t_data_with_score:
@@ -87,16 +90,16 @@ class GA:
         is_play_large_note_success = (note in [NOTE_DON_LARGE, NOTE_KATSU_LARGE]) and \
                                      (note == t_note)
         note_score = SCORE_NONE
-        diff_timing = t_timing - timing
-        if JUDGE_RANGE_FUKA_EARLY <= diff_timing < JUDGE_RANGE_KA_EARLY:
+        diff_timing_ms = (t_timing - timing) * 1000
+        if JUDGE_RANGE_FUKA_EARLY <= diff_timing_ms < JUDGE_RANGE_KA_EARLY:
             note_score = SCORE_FUKA
-        elif JUDGE_RANGE_KA_EARLY <= diff_timing < JUDGE_RANGE_RYO_EARLY:
+        elif JUDGE_RANGE_KA_EARLY <= diff_timing_ms < JUDGE_RANGE_RYO_EARLY:
             note_score = SCORE_TOKUKA if is_play_large_note_success else SCORE_KA
-        elif JUDGE_RANGE_RYO_EARLY <= diff_timing <= JUDGE_RANGE_RYO_LATE:
+        elif JUDGE_RANGE_RYO_EARLY <= diff_timing_ms <= JUDGE_RANGE_RYO_LATE:
             note_score = SCORE_TOKURYO if is_play_large_note_success else SCORE_RYO
-        elif JUDGE_RANGE_RYO_LATE < diff_timing <= JUDGE_RANGE_KA_LATE:
+        elif JUDGE_RANGE_RYO_LATE < diff_timing_ms <= JUDGE_RANGE_KA_LATE:
             note_score = SCORE_TOKUKA if is_play_large_note_success else SCORE_KA
-        elif JUDGE_RANGE_KA_LATE < diff_timing <= JUDGE_RANGE_FUKA_LATE:
+        elif JUDGE_RANGE_KA_LATE < diff_timing_ms <= JUDGE_RANGE_FUKA_LATE:
             note_score = SCORE_FUKA
 
         return note_score

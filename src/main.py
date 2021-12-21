@@ -18,7 +18,7 @@ def main():
     for note in gene:
         if note != NOTE_NONE:
             chart.append((note, timing))
-        timing += SEC_PER_FRAME
+        timing += SEC_PER_SAMPLING
 
     print(f'Expected score: {score}')
     play_chart(chart, tja_path)
