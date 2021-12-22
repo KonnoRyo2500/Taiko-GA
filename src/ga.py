@@ -106,9 +106,9 @@ class GA:
 
     # 初期遺伝子を指定された個数生成
     def _generate_initial_genes(self, n_genes, gene_length):
-        self.genes = [self._generate_initial_gene(gene_length) for _ in range(n_genes + 1)]
-        self.scores = [None for _ in range(n_genes + 1)]
+        self.genes = [self._generate_initial_gene(gene_length) for _ in range(n_genes)]
+        self.scores = [None] * n_genes
 
     # 初期遺伝子を1つ生成
     def _generate_initial_gene(self, gene_length):
-        return [random.randint(NOTE_NONE, NOTE_KATSU_LARGE) for _ in range(gene_length + 1)]
+        return [random.randint(NOTE_NONE, NOTE_KATSU_LARGE) for _ in range(gene_length)]
