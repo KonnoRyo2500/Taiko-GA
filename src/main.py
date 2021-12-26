@@ -25,18 +25,11 @@ def main():
     args = parse_args()
 
     training_data = make_training_data(args.tja_path)
-    g = GA(training_data=training_data, n_genes=1)
-    gene = g.genes[0]
-    score = g.scores[0]
-    chart = []
-    timing = 0.0
-    for note in gene:
-        if note != NOTE_NONE:
-            chart.append((note, timing))
-        timing += SEC_PER_SAMPLING
-
-    print(f'Expected score: {score}')
-    play_chart(chart, args.tja_path)
+    g = GA(training_data=training_data, n_genes=NUM_GENES_IN_GENERATION)
+    gen = 1
+    while gen < 100:
+        g.go_to_next_generation()
+        gen += 1
 
 if __name__ == '__main__':
     main()
