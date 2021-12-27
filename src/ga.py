@@ -63,6 +63,20 @@ class GA:
 
         self._print_generation_info()
 
+    # 遺伝子を譜面として取得
+    def get_gene_as_chart(self, idx=None):
+        # インデックスを省略した場合、一番適応度の高い遺伝子を取得する
+        elite_gene_idx = self.scores.index(max(self.scores))
+        gene = self.genes[idx] if idx != None else self.genes[elite_gene_idx]
+        chart = []
+        timing = 0.0
+        for note in gene:
+            if note != NOTE_NONE:
+                chart.append((note, timing))
+            timing += SEC_PER_SAMPLING
+
+        return chart
+
     # 交叉
     def _crossover(self, gene1, gene2, method=CrossoverMethod.ONE_POINT):
         crossover_func = {

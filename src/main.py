@@ -31,5 +31,7 @@ def main():
         g.go_to_next_generation()
         gen += 1
 
+    play_chart(g.get_gene_as_chart(), args.tja_path)
+
 if __name__ == '__main__':
     main()
