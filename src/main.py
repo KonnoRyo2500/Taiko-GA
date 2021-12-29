@@ -18,6 +18,12 @@ def parse_args():
         required=True,
         help='譜面ファイル(.tja)のパス。')
     parser.add_argument(
+        '--num_generation',
+        '-g',
+        type=int,
+        default=100,
+        help='何世代学習を続けるか。')
+    parser.add_argument(
         '--save_ckpt',
         '-c',
         action='store_true',
@@ -45,7 +51,7 @@ def main():
 
     training_data = make_training_data(args.tja_path)
     g = GA(training_data=training_data, n_genes=NUM_GENES_IN_GENERATION)
-    for gen in range(1, 101):
+    for gen in range(1, args.num_generation):
         if (args.save_ckpt) and (gen % args.ckpt_save_period == 0):
             g.save_generation(dir=args.ckpt_out_dir)
         g.go_to_next_generation()
