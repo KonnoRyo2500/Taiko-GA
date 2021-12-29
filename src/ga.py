@@ -1,6 +1,8 @@
 # 太鼓さん次郎GAアプリ GAクラス
 
 import random
+import os
+import os.path as op
 
 from const_val import *
 from eval import eval_genes
@@ -76,6 +78,24 @@ class GA:
             timing += SEC_PER_SAMPLING
 
         return chart
+
+    # 現世代のすべての遺伝子情報をファイルに書き出す
+    def save_generation(self, dir):
+        if not op.exists(dir):
+            os.makedirs(dir)
+
+        # ファイル名は"taiko_GA_ckpt_gen(世代数).dat"で固定。
+        file_name = f'taiko_GA_ckpt_gen{self.n_generation}.dat'
+        path = op.join(dir, file_name)
+        with open(path, 'w') as f:
+            f.write(f'{self.n_generation}\n')
+            for gene, score in zip(self.genes, self.scores):
+                gene_str = ''.join([str(x) for x in gene])
+                f.write(f'{gene_str}, {score}\n')
+
+    # 1世代分の遺伝子情報をファイルから読み込む
+    def load_generation(self, path):
+        pass
 
     # 交叉
     def _crossover(self, gene1, gene2, method=CrossoverMethod.ONE_POINT):

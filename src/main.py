@@ -1,6 +1,7 @@
 # 太鼓さん次郎GAアプリ メイン処理
 
 import argparse
+import os.path as op
 
 from training_data import make_training_data
 from jiro import play_chart
@@ -16,6 +17,24 @@ def parse_args():
         type=str,
         required=True,
         help='譜面ファイル(.tja)のパス。')
+    parser.add_argument(
+        '--save_ckpt',
+        '-c',
+        action='store_true',
+        help='遺伝子情報の書き出しを有効化する。'
+    )
+    parser.add_argument(
+        '--ckpt_save_period',
+        '-p',
+        type=int,
+        default=10,
+        help='遺伝子情報を何世代ごとに書き出すか。')
+    parser.add_argument(
+        '--ckpt_out_dir',
+        '-o',
+        type=str,
+        default=op.join('..', 'ckpt'),
+        help='各世代の遺伝子情報を書き出すディレクトリ。')
     args = parser.parse_args()
 
     return args
@@ -26,10 +45,10 @@ def main():
 
     training_data = make_training_data(args.tja_path)
     g = GA(training_data=training_data, n_genes=NUM_GENES_IN_GENERATION)
-    gen = 1
-    while gen < 100:
+    for gen in range(1, 101):
+        if (args.save_ckpt) and (gen % args.ckpt_save_period == 0):
+            g.save_generation(dir=args.ckpt_out_dir)
         g.go_to_next_generation()
-        gen += 1
 
     play_chart(g.get_gene_as_chart(), args.tja_path)
 
