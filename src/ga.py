@@ -13,11 +13,11 @@ class GA:
     # 1秒間に何個の音符を叩くかを、const_val.pyのNOTE_SAMPLING_RATEで指定できる。
 
     # コンストラクタ
-    def __init__(self, training_data, n_genes=100):
+    def __init__(self, training_data, n_genes=100, ckpt=None):
         self.genes = [] # 現世代での遺伝子
         self.scores = [] # 適合度
         self.training_data = training_data # 教師データ
-        self.n_generation = 1
+        self.n_generation = 1 # 世代数
 
         # 遺伝子の長さの決定
         training_final_note_time = training_data[-1][1]
@@ -26,6 +26,11 @@ class GA:
 
         # 初期世代の生成
         self._generate_initial_genes(n_genes, gene_length)
+        # チェックポイントが指定されている場合はそれを読み込む
+        if ckpt is not None:
+            self.load_generation(ckpt)
+            return
+
         self.scores = eval_genes(self.genes, self.training_data)
 
         self._print_generation_info()
@@ -91,11 +96,31 @@ class GA:
             f.write(f'{self.n_generation}\n')
             for gene, score in zip(self.genes, self.scores):
                 gene_str = ''.join([str(x) for x in gene])
-                f.write(f'{gene_str}, {score}\n')
+                f.write(f'{gene_str},{score}\n')
 
     # 1世代分の遺伝子情報をファイルから読み込む
     def load_generation(self, path):
-        pass
+        with open(path, 'r') as f:
+            n_generation = int(f.readline())
+            genes = []
+            scores = []
+            for record in f.readlines():
+                record = record.rstrip('\n')
+                gene_str, score_str = record.split(',')
+                gene = [int(c) for c in gene_str]
+                score = float(score_str)
+                genes.append(gene)
+                scores.append(score)
+            if len(genes) != len(self.genes):
+                raise RuntimeError('遺伝子の数がチェックポイントファイルとGAインスタンスで一致しません。')
+            if len(genes[0]) != len(self.genes[0]):
+                raise RuntimeError('遺伝子の長さがチェックポイントファイルとGAインスタンスで一致しません。')
+            if len(scores) != len(self.scores):
+                raise RuntimeError('適応度の数がチェックポイントファイルとGAインスタンスで一致しません。')
+
+        self.genes = genes
+        self.scores = scores
+        self.n_generation = n_generation
 
     # 交叉
     def _crossover(self, gene1, gene2, method=CrossoverMethod.ONE_POINT):

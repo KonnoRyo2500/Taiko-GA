@@ -41,6 +41,11 @@ def parse_args():
         type=str,
         default=op.join('..', 'ckpt'),
         help='各世代の遺伝子情報を書き出すディレクトリ。')
+    parser.add_argument(
+        '--load_ckpt',
+        '-i',
+        type=str,
+        help='遺伝子情報を指定ファイルから読み込む。')
     args = parser.parse_args()
 
     return args
@@ -50,7 +55,7 @@ def main():
     args = parse_args()
 
     training_data = make_training_data(args.tja_path)
-    g = GA(training_data=training_data, n_genes=NUM_GENES_IN_GENERATION)
+    g = GA(training_data=training_data, n_genes=NUM_GENES_IN_GENERATION, ckpt=args.load_ckpt)
     for gen in range(1, args.num_generation):
         if (args.save_ckpt) and (gen % args.ckpt_save_period == 0):
             g.save_generation(dir=args.ckpt_out_dir)
