@@ -1,5 +1,7 @@
 # 太鼓さん次郎GAアプリ 適応度判定処理
 
+from multiprocessing import Pool
+
 from const_val import *
 
 # 与えられた複数の遺伝子の適応度をそれぞれ計算する
@@ -13,10 +15,9 @@ def eval_genes(genes, training_data):
     # それぞれの判定について点数を与える。
     # 点数の合計をその遺伝子の適応度とする。
 
-    scores = [0] * len(genes)
-    for i, gene in enumerate(genes):
-        scores[i] = _eval_gene(gene, training_data)
-
+    with Pool(NUM_PROCESSES) as pl:
+        eval_args = [(gene, training_data) for gene in genes]
+        scores = pl.starmap(_eval_gene, eval_args)
     return scores
 
 # 与えられた1つの遺伝子の適応度を計算する

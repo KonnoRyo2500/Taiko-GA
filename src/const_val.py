@@ -2,6 +2,10 @@
 
 from enum import Enum, auto
 
+### システム全般 ###
+# 評価時に用いるプロセス数
+NUM_PROCESSES = 16
+
 ### 太鼓さん次郎関連 ###
 # ヘッダ
 HEADER_BPM = 'BPM'
